@@ -82,6 +82,29 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     strategy: "jwt",
   },
   callbacks: {
+    async signIn({ user, account }) {
+      // Only check OAuth sign-ins
+      if (account?.provider === "credentials") return true;
+
+      // Check if a user with this email already exists with a password (credentials account)
+      const existingUser = await prisma.user.findUnique({
+        where: { email: user.email! },
+        include: { accounts: true },
+      });
+
+      if (!existingUser) return true; // new user, allow
+
+      const hasCredentialsAccount = existingUser.accounts.some(
+        (a) => a.provider === "credentials",
+      );
+
+      // ✅ If they signed up with credentials, block OAuth sign-in
+      if (existingUser.hashedPassword || hasCredentialsAccount) {
+        return `/auth/signin?error=credentials_conflict`;
+      }
+
+      return true;
+    },
     async jwt({ token, user }) {
       if (user) token.id = user.id;
       return token;
