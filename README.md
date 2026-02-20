@@ -1,5 +1,9 @@
 Fullstack app with secured authentication (Next.js, Next-auth, Prisma, Postgres, Tailwind)
 
+## Deployed App
+
+https://fullstack-nextjs-postgres.vercel.app
+
 ## Getting Started
 
 ### Local environment variables
