@@ -14,6 +14,10 @@ const credentialsSchema = z.object({
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter: PrismaAdapter(prisma),
+  pages: {
+    signIn: "/auth/signin",
+    error: "/auth/signin",
+  },
   providers: [
     GitHub({
       clientId: process.env.GITHUB_ID!,
