@@ -6,6 +6,7 @@ import Credentials from "next-auth/providers/credentials";
 import prisma from "./prisma";
 import bcrypt from "bcrypt";
 import { z } from "zod";
+import { CredentialsSignin } from "next-auth";
 
 const credentialsSchema = z.object({
   email: z.string().email(),
@@ -46,8 +47,22 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         const { email, password } = parsed.data;
 
         // 1️⃣ Find user by email
-        const user = await prisma.user.findUnique({ where: { email } });
-        if (!user || !user.hashedPassword) return null;
+        const user = await prisma.user.findUnique({
+          where: { email },
+          include: { accounts: true }, // ✅ fetch linked OAuth accounts
+        });
+
+        if (!user) return null;
+
+        // ✅ User exists but signed up via OAuth, has no password
+        if (!user.hashedPassword) {
+          const providers = user.accounts.map((a) => a.provider);
+          class OAuthConflictError extends CredentialsSignin {
+            code = `oauth:${providers.join(",")}`;
+          }
+
+          throw new OAuthConflictError();
+        }
 
         // 2️⃣ Compare password
         const isValid = await bcrypt.compare(password, user.hashedPassword);
