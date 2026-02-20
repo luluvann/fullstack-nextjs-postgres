@@ -4,6 +4,12 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
 import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Card, CardContent } from "@/components/ui/card";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { AlertTriangle, Loader2 } from "lucide-react";
 
 export default function SignUpPage() {
   const [name, setName] = useState("");
@@ -31,7 +37,6 @@ export default function SignUpPage() {
       setLoading(false);
       return;
     }
-
     // ✅ Auto sign-in after signup
     const result = await signIn("credentials", {
       email,
@@ -69,87 +74,95 @@ export default function SignUpPage() {
           <h1 className="text-xl font-semibold text-white tracking-tight">
             Create an account
           </h1>
-          <p className="text-sm text-zinc-500 mt-1">Sign up to get started</p>
+          <p className="text-sm text-muted-foreground mt-1">
+            Sign up to get started
+          </p>
         </div>
 
         {/* Card */}
-        <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-6 shadow-xl">
-          <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-            <div className="flex flex-col gap-1.5">
-              <label
-                htmlFor="name"
-                className="text-xs font-medium text-zinc-400 uppercase tracking-wider"
-              >
-                Name
-              </label>
-              <input
-                id="name"
-                type="text"
-                placeholder="John Doe"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                required
-                className="w-full px-3 py-2.5 rounded-lg bg-zinc-800 border border-zinc-700 text-zinc-100 text-sm placeholder:text-zinc-600 focus:outline-none focus:border-zinc-500 focus:ring-1 focus:ring-zinc-500 transition-colors"
-              />
-            </div>
+        <Card className="bg-zinc-900 border-zinc-800 shadow-xl">
+          <CardContent className="pt-6">
+            <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+              <div className="flex flex-col gap-1.5">
+                <Label
+                  htmlFor="name"
+                  className="text-xs uppercase tracking-wider text-muted-foreground"
+                >
+                  Name
+                </Label>
+                <Input
+                  id="name"
+                  type="text"
+                  placeholder="John Doe"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  required
+                  className="bg-zinc-800 border-zinc-700 text-zinc-100 placeholder:text-zinc-600 focus-visible:ring-zinc-500"
+                />
+              </div>
 
-            <div className="flex flex-col gap-1.5">
-              <label
-                htmlFor="email"
-                className="text-xs font-medium text-zinc-400 uppercase tracking-wider"
-              >
-                Email
-              </label>
-              <input
-                id="email"
-                type="email"
-                placeholder="you@example.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                className="w-full px-3 py-2.5 rounded-lg bg-zinc-800 border border-zinc-700 text-zinc-100 text-sm placeholder:text-zinc-600 focus:outline-none focus:border-zinc-500 focus:ring-1 focus:ring-zinc-500 transition-colors"
-              />
-            </div>
+              <div className="flex flex-col gap-1.5">
+                <Label
+                  htmlFor="email"
+                  className="text-xs uppercase tracking-wider text-muted-foreground"
+                >
+                  Email
+                </Label>
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder="you@example.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  className="bg-zinc-800 border-zinc-700 text-zinc-100 placeholder:text-zinc-600 focus-visible:ring-zinc-500"
+                />
+              </div>
 
-            <div className="flex flex-col gap-1.5">
-              <label
-                htmlFor="password"
-                className="text-xs font-medium text-zinc-400 uppercase tracking-wider"
-              >
-                Password
-              </label>
-              <input
-                id="password"
-                type="password"
-                placeholder="••••••••"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                className="w-full px-3 py-2.5 rounded-lg bg-zinc-800 border border-zinc-700 text-zinc-100 text-sm placeholder:text-zinc-600 focus:outline-none focus:border-zinc-500 focus:ring-1 focus:ring-zinc-500 transition-colors"
-              />
-            </div>
+              <div className="flex flex-col gap-1.5">
+                <Label
+                  htmlFor="password"
+                  className="text-xs uppercase tracking-wider text-muted-foreground"
+                >
+                  Password
+                </Label>
+                <Input
+                  id="password"
+                  type="password"
+                  placeholder="••••••••"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  className="bg-zinc-800 border-zinc-700 text-zinc-100 placeholder:text-zinc-600 focus-visible:ring-zinc-500"
+                />
+              </div>
 
-            {error && (
-              <p className="text-xs text-red-400 bg-red-950/50 border border-red-900/50 rounded-lg px-3 py-2.5">
-                {error}
-              </p>
-            )}
-
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full py-2.5 rounded-lg bg-white text-zinc-900 text-sm font-semibold hover:bg-zinc-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 mt-1"
-            >
-              {loading && (
-                <span className="w-4 h-4 border-2 border-zinc-400 border-t-zinc-900 rounded-full animate-spin" />
+              {error && (
+                <Alert
+                  variant="destructive"
+                  className="border-red-900/50 bg-red-950/50"
+                >
+                  <AlertTriangle className="h-4 w-4" />
+                  <AlertDescription className="text-red-400 text-xs">
+                    {error}
+                  </AlertDescription>
+                </Alert>
               )}
-              Create account
-            </button>
-          </form>
-        </div>
+
+              <Button
+                type="submit"
+                disabled={loading}
+                className="w-full mt-1 bg-white text-zinc-900 hover:bg-zinc-100"
+              >
+                {loading && <Loader2 className="w-4 h-4 animate-spin" />}
+                Create account
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
 
         {/* Footer */}
-        <p className="text-center text-sm text-zinc-600 mt-6">
+        <p className="text-center text-sm text-muted-foreground mt-6">
           Already have an account?{" "}
           <Link
             href="/auth/signin"
